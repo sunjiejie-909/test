@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>积分兑换</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #3b82f6, #2563eb);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* 外部容器 */
+        .container {
+            width: 320px;
+            padding: 20px;
+        }
+
+        /* 新的标签容器样式 */
+        .tag-container {
+            display: inline-block;
+            justify-content: center;
+            border: 1px solid white;
+            border-radius: 15px;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        /* 透明背景与白色字体 */
+        .tag-transparent {
+            background: transparent;
+            color: white;
+            padding: 5px 15px;
+            font-size: 14px;
+            
+        }
+
+        /* 白色背景与蓝色字体 */
+        .tag-colored {
+            background: white;
+            color: #2563eb;
+            padding: 5px 15px;
+            font-size: 14px;
+        }
+
+        /* 红包卡片 */
+        .card {
+            background: white;
+            color: black;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 银行卡红包标题 */
+        .card-header {
+            background: #2563eb;
+            color: white;
+            padding: 12px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* “今日可用”标签 */
+        .tag-hot {
+            position: absolute;
+            top: 60px;
+            right: 15px;
+            background: red;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 10px;
+        }
+
+        /* 卡片内容 */
+        .card-content {
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* 竖向文本样式 */
+        .vertical-text {
+            writing-mode: vertical-rl; /* 竖向从右到左 */
+            transform: rotate(360deg); 
+            margin: 0;
+            font-size: 24px; 
+        }
+
+        /* 金额样式 */
+        .amount {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2563eb;
+            margin: 10px 0;
+        }
+
+        /* 点状虚线 */
+        .dotted-line {
+            border: none;
+            border-top: 2px dotted #888;
+            margin: 15px 0;
+            width: 80%;
+        }
+
+        .light-blue {
+            color: rgb(105, 195, 226); /* 定义淡蓝色 */
+        }
+
+        /* 领取按钮 */
+        .claim-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background: #2563eb;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .claim-btn:hover {
+            background: #1e40af;
+        }
+
+        .claim-btn:disabled {
+            background: gray;
+            cursor: not-allowed;
+        }
+
+        /* 客服电话 */
+        .customer-service {
+            margin-top: 20px;
+            font-size: 25px;
+        }
+ 
+        /* 兑换按钮样式 */
+        .exchange-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 30px;
+            background: white;
+            color: #2563eb;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+ 
+        /* 遮罩层 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 999;
+        }
+ 
+        /* 弹窗容器 */
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            color: #333;
+            border-radius: 15px;
+            padding: 20px;
+            width: 300px;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+ 
+        /* 显示状态 */
+        .show {
+            visibility: visible;
+            opacity: 1;
+        }
+ 
+        /* 弹窗内容 */
+        .popup-header {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+ 
+        .points-input {
+            width: 80%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+ 
+        .confirm-btn {
+            background: #2563eb;
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+ 
+        .confirm-btn:hover {
+            background: #1d4fd7;
+        }
+ 
+        /* 关闭按钮 */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            cursor: pointer;
+            color: #999;
+            font-size: 24px;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>畅由积分兑换</h1>
+
+        <div class="tags">
+            <div class="tag-container" style="width: auto; display: inline-block;">
+                <span class="tag tag-transparent">公交地铁可用</span>
+                <span class="tag tag-colored">支付宝红包</span>
+            </div>
+        </div>
+
+        <div style="height: 20px;"></div>
+
+        <div class="card">
+            <div class="card-header">银行卡红包</div>
+
+            <div class="card-content" style="position: relative;">
+                <span class="tag-hot" style="position: absolute; top: 15px; right: 15px;">今日可用</span>
+                <p class="vertical-text"><strong>预计</strong></p >
+                <p class="amount">5元</p >
+                <p class="light-blue">支付宝银行卡支付的自动抵扣</p >
+                <hr class="dotted-line">
+                <button id="claimButton" class="exchange-btn" onclick="showPopup()">立即领取</button>
+                <p class="light-blue">到账银行卡消费自动抵扣</p >
+            </div>
+        </div>
+
+        <p class="customer-service">-客服电话：400-0788-996-</p >
+    </div>
+ 
+    <!-- 遮罩层 -->
+    <div class="overlay" id="overlay" onclick="hidePopup()"></div>
+ 
+    <!-- 弹窗 -->
+    <div class="popup" id="popup">
+        <h2>本次可优惠</h2>
+        <p class="amount">¥5.00</p >
+        <div class="input-box">
+            <span>📱</span>
+            <input type="text" placeholder="请输入手机号">
+        </div>
+        <p class="light-blue">付费时可自动抵扣现金</p >
+        <button class="confirm-btn" onclick="exchangePoints()">确认兑换</button>
+        </div>
+    </div>
+ 
+    <script>
+        // 显示弹窗 
+        function showPopup() {
+            document.getElementById('overlay').classList.add('show'); 
+            document.getElementById('popup').classList.add('show'); 
+        }
+ 
+        // 隐藏弹窗 
+        function hidePopup() {
+            document.getElementById('overlay').classList.remove('show'); 
+            document.getElementById('popup').classList.remove('show'); 
+        }
+ 
+        // 兑换积分逻辑 
+        function exchangePoints() {
+            const input = document.querySelector('.points-input'); 
+            if(input.value  && input.value  > 0) {
+                alert('兑换成功！');
+                hidePopup();
+            } else {
+                alert('请输入有效积分');
+            }
+        }
+ 
+        // 点击弹窗阻止冒泡 
+        document.getElementById('popup').addEventListener('click',  function(e) {
+            e.stopPropagation(); 
+        });
+    </script>
+</body>
+</html>
