@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="./utils/md5.js"></script>
+    <script src="./utils/config.js"></script>
+    <script src="./utils/utils.js"></script>
+    <script src="./js/base64.min.js"></script>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="./js/index.js"></script>
+	<!-- <script src="https://s.url.cn/qqun/qun/qqweb/m/qun/confession/js/vconsole.min.js "></script> -->
+    <link rel="stylesheet" href="./style/index.css">
+    <script>
+        (function() {
+            var html = document.documentElement;
+            var hWidth = html.getBoundingClientRect().width;
+            html.style.fontSize = hWidth / 15 + "px";
+        })()
+    </script>
+    <title>积分兑换</title>
+    <style>
+         *{
+        padding: 0;
+        margin: 0
+    }
+    strong{
+        font-weight: normal;
+    }
+    input{
+        outline: none;
+        border: 0 none;
+    }
+    .kefu,.use_rule,.exchange_rule,.active_rule{
+        position: absolute;
+        right: 0;
+        z-index: 99;
+    }
+    .kefu{
+        width: 2rem;
+        top: 4rem;
+    }
+    .exchange_rule{
+        width: 1rem;
+        top: 6rem;
+    }
+    /* .active_rule{
+        width: 1rem;
+        top: 9rem;
+    } */
+    .use_rule{
+        width: 1rem;
+        top: 9rem;
+    }
+    .home{
+        position: relative;
+        min-height: 100vh;
+        background: #2b83ff;
+    }
+    .banner{
+        width: 100%;
+        vertical-align: top;
+    }
+    .container{
+        position: absolute;
+        top:18rem;
+        width: 100%;
+        margin-bottom: 0.2rem;
+    }
+    .form{
+        width: 10rem;
+        margin: 0 auto;
+    }
+    /* .form .input{
+        text-align: center;
+        width: 13.6rem;
+        margin: 0.7rem auto;
+        padding: 0.1rem;
+        border-radius: 0.2rem;
+        transform: translateX(-0.1rem);
+    }
+    .input input{
+        border-radius: 1rem;
+        line-height:2rem;
+        height:2rem;
+        width: 10rem;
+        text-align: center;
+        background-color: #f2f2f2;
+        font-size: 0.68rem;
+    } */
+    .form .button img{
+        width: 100%;
+    }
+    .button{
+        margin-top: 0.6rem;
+        text-align: center;
+        position: relative;
+    }
+    .button img{
+        width: 100%;
+        vertical-align: top;
+    }
+    .pay{
+        padding: 0 0.6rem 0.1rem;
+    }
+    .icon{
+        width: 0.7rem;
+        vertical-align: middle;
+        margin-right: 0.2rem;
+        display: none;
+    }
+    .pay span {
+        display: inline-block;
+        vertical-align: middle;
+        font-size: .6rem;
+    }
+    .pay span:nth-of-type(1) {
+        color: #000;
+    }
+    .pay span:nth-of-type(2) {
+        text-decoration: underline;
+        color: #2b83ff;
+        margin-left: .4rem;
+    }
+    .jump{
+        position: relative;
+        width: 10.5rem;
+        text-align: center;
+        margin: 0.6rem auto 0;
+    }
+    .jump div{
+        border: 2px solid #000;
+        color: #000;
+        background:  #2b83ff;
+        display: inline-block;
+        width: 4.2rem;
+        line-height: 0.9rem;
+        padding: 0.1rem 0;
+        font-size: 0.74rem;
+        margin-bottom: 0.3rem;
+        text-align: center;
+    }
+
+
+    .close{
+        text-align: center;
+        margin-top: 0.3rem;
+    }
+    .close img{
+        width: 1.2rem;
+    }
+    .loading {
+        position: fixed;
+        top:0;
+        background: rgba(255,255,255,.6);
+        left:0;
+        width: 100%;
+        height: 100vh;
+        z-index: 999;
+        display: none;
+    }
+    .loading .in {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 1.2rem;
+        height: 1.2rem;
+        margin-left: -0.6rem;
+        transform: translateY(-50%);
+        animation: spin 2s linear infinite;
+    }
+    .loading .in img{
+        width: 1.2rem;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .toast{
+        position: fixed;
+        top:50%;
+        left: 50%;
+        text-align: center;
+        transform: translateX(-50%) translateY(-50%);
+        background: rgba(0,0,0,.7);
+        color: #fff;
+        padding: 0.4rem;
+        z-index: 999;
+        display: none;
+        font-size: 0.6rem;
+    }
+    .xieyi{
+        width: 12.7rem;
+        margin: 0 auto;
+        font-size: 0.5rem;
+        display: flex;
+        justify-content: center;
+        line-height: 0.7rem;
+        margin-top: 0.7rem;
+        padding-bottom: 0.7rem;
+    }
+    .xieyi img{
+        display: none;
+        width: 0.7rem;
+        height: 0.7rem;
+    }
+    .xieyi .check2{
+        display: inline-block;
+    }
+    .xieyi span{
+        display: inline-block;
+        color: #999;
+    }
+    .xieyi .text{
+        margin-left: 0.2rem;
+    }
+    .xieyi a{
+        color: #ff6a29;
+        text-decoration: none;
+    }
+    .rule-body{
+        padding: 0.6rem;
+        padding-bottom: 2rem;
+    }
+    .rule-body .title{
+        text-align: center;
+    }
+    .rule-text{
+        line-height: 1.5rem;
+    }
+    .dialog{
+        position: fixed;
+        top:0;
+        left: 0;
+        z-index: 99;
+        width: 100%;
+        display: none;
+        height: 100vh;
+        background: rgba(0,0,0,.4);
+    }
+    /* .dialog-content{
+        position: absolute;
+        transform: translateX(-50%);
+        bottom:-0rem;
+        left: 50%;
+        text-align: center;
+    } */
+    .dialog-content .rule-img{
+        width: 12rem;
+    }
+    .dialog-content .close{
+        width: 1.5rem;
+
+    }
+
+    .dialog-exchange{
+        position: fixed;
+        top:0;
+        left: 0;
+        display: none;
+        z-index: 99;
+        width: 100%;
+        height: 100vh;
+        background: rgba(0,0,0,.4);
+    }
+    .exchange-center .sub-title{
+        font-size: 0.8rem;
+    }
+    .exchange-center .sub-tips{
+        font-size: 0.52rem;
+    }
+    .exchange-content{
+        position: absolute;
+        bottom:-20rem;
+        left: 0;
+        width: 100%;
+        text-align: center;
+    }
+    .exchange-content.active{
+        bottom:0rem;
+        transition: bottom 0.2s linear;
+    }
+    .exchange-content .login-bg{
+        width: 100%;
+        vertical-align: top;
+    }
+    .exchange-content .close{
+        width: 1.5rem;
+    }
+    .exchange-center{
+        position: absolute;
+        top:1.5rem;
+        width: 100%;
+        text-align: center;
+    }
+    .exchange-center .sub-title{
+        font-size: 0.8rem;
+    }
+    .exchange-center .sub-tips{
+        font-size: 0.52rem;
+    }
+    .exchange-center .login{
+        width: 11rem;
+        line-height: 1.6rem;
+        text-align: center;
+        background-color: #2b83ff;
+        border-radius: 0.7rem;
+        margin: 3rem auto 0;
+        color: #fff;
+        font-size: 0.68rem;
+    }
+    .code-flex{
+        width: 11rem;
+        margin: 4rem auto 0;
+    }
+    .tel-input{
+        text-align: center;
+        width: 11rem;
+        position: relative;
+        background: #f7f7f7;
+        margin: 0.7rem auto 0;
+        border-radius: 0.8rem;
+        height:1.6rem;
+        transform: translateX(-0.1rem);
+    }
+    .tel-icon{
+        position: absolute;
+        left: 0.2rem;
+        width: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    .tel-input input{
+        height:1.6rem;
+        height:1.6rem;
+        vertical-align: top;
+        width: 8rem;
+        background: transparent;
+        font-size: 0.56rem;
+    }
+
+    </style>
+</head>
+<body>
+    <div class="home">
+        <!-- <img class="kefu" src="https://static.ewpay.com/images/tl/points/gbPointsV2/kefu.png" alt=""> -->
+        <img class="banner" src="https://static.ewpay.com/images/tl/points/gbPointsV11/bg.jpg" alt="">
+        <div class="container">
+            <div class="form">
+                <div class="button exchange">
+                    <img src="https://static.ewpay.com/images/tl/points/gbPointsV11/button.png" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="dialog-exchange">
+        <div class="exchange-content">
+            <img class="login-bg" src="https://static.ewpay.com/images/tl/points/gbPointsV11/dialog-bg.png" alt="" />
+            <div class="exchange-center">
+                <div class="code-flex">
+                    <div class="tel-input">
+                        <img class="tel-icon" src="https://static.ewpay.com/images/tl/points/gbPointsV11/tel-icon.png" alt="" />
+                        <input id="tel2" placeholder="请输入中国移动号码" type="text" />
+                    </div>
+                </div>
+                <div class="" style="text-align: center;">
+                    <div class="login" id="ok">立即领取</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="dialog dialog-rule">
+        <div class="dialog-content">
+            <img class="rule-img" src="" alt="" />
+            <img class="close" src="https://static.ewpay.com/images/tl/points/gbPointsV11/close.png" alt="" />
+        </div>
+    </div>
+    <div class="toast"></div>
+    <div class="loading">
+        <div class="in">
+            <img src="https://static.ewpay.com/images/tl/points/gbPointsV11/loading.png" alt="" />
+        </div>
+    </div>
+</body>
+</html>
